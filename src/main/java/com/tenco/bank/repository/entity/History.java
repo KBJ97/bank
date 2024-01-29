@@ -1,4 +1,4 @@
-package com.tenco.bank.entity;
+package com.tenco.bank.repository.entity;
 
 import java.security.Timestamp;
 
