@@ -7,30 +7,23 @@
 	<h2>나의 계좌 목록</h2>
 	<h5>어서오세요! 환영합니다.</h5>
 	<!-- 만약 accountList null or not null  -->
-	<div class="bg-light text-center" style="padding-bottom: 50px">
+	<div class="text-center" style="padding-bottom: 50px">
 		<div style="padding: 50px">
 			<table class=table style="border: 1px solid #dee2e6">
 				<thead>
 					<tr>
-						<th>${principal.username} 님의계좌</th>
+						<th colspan="2">${principal.username}님의계좌</th>
+					</tr>
+					<tr>
 						<th>계좌번호 : ${account.number}</th>
 						<th>잔액 : ${account.balance}원</th>
 					</tr>
 				</thead>
-				<tbody>
-					<tr>
-						<td><a href="/account/detail/${account.id}">전체 조회</a></td>
-						<td><a href="/account/detail/${account.id}?type=deposit">입금
-								조회</a></td>
-						<td><a href="/account/detail/${account.id}?type=withdraw">출금
-								조회</a></td>
-					</tr>
-				</tbody>
 			</table>
 		</div>
 		<div style="padding-left: 50px; padding-right: 50px;">
 			<table class=table>
-				<thead>
+				<thead class="bg-light">
 					<tr>
 						<th>날짜</th>
 						<th>보낸이</th>
@@ -40,6 +33,14 @@
 					</tr>
 				</thead>
 				<tbody>
+					<ul class="">
+						<li class="btn btn-outline-secondary"><a class="nav-link " 
+							href="/account/detail/${account.id}">전체 조회</a></li>
+						<li class="btn btn-outline-secondary"><a class="nav-link"
+							href="/account/detail/${account.id}?type=deposit">입금 조회</a></li>
+						<li class="btn btn-outline-secondary"><a class="nav-link"
+							href="/account/detail/${account.id}?type=withdraw">출금 조회</a></li>
+					</ul>
 					<c:forEach var="history" items="${historyList}">
 						<tr>
 							<td>${history.formatCreatedAt()}</td>
