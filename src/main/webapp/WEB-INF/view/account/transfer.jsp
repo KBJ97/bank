@@ -9,19 +9,21 @@
 		<h5>어서오세요, 환영합니다.</h5>
 		<form action="/account/transfer" method="post">
 			<div class="form-group">
-				<label for="amount">이체금액:</label> <input type="text" name="amount"
+				<label for="amount">이체 금액:</label> <input type="text" name="amount"
 					class="form-control" placeholder="Enter amount" id="amount"
 					value="1000">
 			</div>
 			<div class="form-group">
-				<label for="wAccountNumber">출금 계좌번호:</label> <input type="text"
+				<label for="wAccountNumber">출금 계좌 번호:</label> 
+				<input type="text"
 					name="wAccountNumber" class="form-control" placeholder="출금 계좌번호 입력"
-					id="wAccountNumber" value="1234">
+					id="wAccountNumber" value="9999">
 			</div>
 			<div class="form-group">
-				<label for="wAccountPassword">출금 계좌 비밀번호 : </label> <input
-					type="password" name="wAccountPassword" class="form-control"
-					placeholder="출금 계좌 비밀번호 입력" id="wAccountPassword" value="1234">
+				<label for="password">출금 계좌 비밀 번호:</label> 
+				<input type="password"
+					name="password" class="form-control" placeholder="출금 계좌 비밀번호 입력"
+					id="password" value="1234">
 			</div>
 			<div class="form-group">
 				<label for="dAccountNumber">입금(이체) 계좌번호:</label> <input type="text"
