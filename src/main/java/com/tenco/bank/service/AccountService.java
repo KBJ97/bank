@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tenco.bank.dto.AccountSaveFormDto;
 import com.tenco.bank.dto.DepositFormDto;
+import com.tenco.bank.dto.TransferFormDto;
 import com.tenco.bank.dto.WithdrawFormDto;
 import com.tenco.bank.handler.exception.CustomRestfulException;
 import com.tenco.bank.repository.entity.Account;
@@ -109,11 +110,14 @@ public class AccountService {
 		if (accountEntity == null) {
 			throw new CustomRestfulException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
 		// 2. 본인 계좌 여부 확인
 		accountEntity.checkOwner(principalId);
+
 		// 3. 입금처리
 		accountEntity.deposit(dto.getAmount());
 		accountRepository.updateById(accountEntity);
+
 		// 6. history에 거래내역 등록
 		History history = new History();
 		history.setAmount(dto.getAmount());
@@ -121,6 +125,53 @@ public class AccountService {
 		history.setDBalance(accountEntity.getBalance());
 		history.setWAccountId(null);
 		history.setDAccountId(accountEntity.getId());
+
+		int rowResultCount = historyRepository.insert(history);
+		if (rowResultCount != 1) {
+			throw new CustomRestfulException("정상 처리 되지 않았습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	//	1. 출금 계좌 존재 여부 - select
+	//	2. 입금 계좌 존재 여부 - s
+	//	3. 출금 계좌 본인 소유 확인
+	//	4. 출금 계좌 비번 확인 - Object
+	//	5. 출금 계좌 잔액 확인
+	//	6. 출금 계좌 잔액 수정
+	//	7. 입금 계좌 잔액 수정
+	//	8. 거래 내역 등록 처리 (이체 내역 쿼리 테스트)
+	//	9. 트랜잭션 처리
+	@Transactional
+	public void updateAccountTransfer(TransferFormDto dto, Integer principalId) {
+		// 1.
+		Account accountEntityW = accountRepository.findByNumber(dto.getWAccountNumber());
+		if (accountEntityW == null) {
+			throw new CustomRestfulException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// 2.
+		Account accountEntityD = accountRepository.findByNumber(dto.getDAccountNumber());
+		if (accountEntityD == null) {
+			throw new CustomRestfulException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		// 3. 
+		accountEntityW.checkOwner(principalId);
+		// 4.                                
+		accountEntityW.checkPassword(dto.getWAccountPassword());
+		// 5. 
+		accountEntityW.checkBalance(dto.getAmount());
+		// 6   
+		accountEntityW.withdraw(dto.getAmount());
+		accountRepository.updateById(accountEntityW);
+		// 7   
+		accountEntityD.deposit(dto.getAmount());
+		accountRepository.updateById(accountEntityD);
+		// 8. history에 거래내역 등록
+		History history = new History();
+		history.setAmount(dto.getAmount());
+		history.setWBalance(accountEntityW.getBalance());
+		history.setDBalance(accountEntityD.getBalance());
+		history.setWAccountId(accountEntityW.getId());
+		history.setDAccountId(accountEntityD.getId());
 		
 		int rowResultCount = historyRepository.insert(history);
 		if (rowResultCount != 1) {
