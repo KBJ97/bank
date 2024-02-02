@@ -1,6 +1,8 @@
 package com.tenco.bank.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +18,10 @@ public class UserService {
 
 	// 생성자 의존 주입 DI 
 	
-	// @Autowired
-	private UserRepository userRepository;	
-	
-	public UserService(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
-	
+	@Autowired
+    private UserRepository userRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	
 	/**
 	 * 회원 가입 로직 처리 
@@ -32,9 +31,11 @@ public class UserService {
 	@Transactional 
 	public void createUser(SignUpFormDto dto) {
 		
+		// 추가 개념 암호화 처리
+		
 		User user = User.builder()
 				.username(dto.getUsername())
-				.password(dto.getPassword())
+				.password(passwordEncoder.encode(dto.getPassword()))
 				.fullname(dto.getFullname())
 				.build();
 		
@@ -51,17 +52,24 @@ public class UserService {
 	 * @return User
 	 */
 	public User readUser(SignInFormDto dto) {
-		User user = User.builder()
-				.username(dto.getUsername())
-				.password(dto.getPassword())
-				.build();
-				
-		User userEntity = userRepository.findByUsernameAndPassword(user);
 		
+		// 사용자의 username 받아서 정보 추출
+		User userEntity = userRepository.findByUsername(dto.getUsername());
+
 		if(userEntity == null) {
-			throw new UnAuthorizedException("인증된 사용자가 아닙니다", 
-					HttpStatus.UNAUTHORIZED);
+			throw new CustomRestfulException("존재하지 않는 계정 입니다", 
+					HttpStatus.BAD_REQUEST);
 		}
+		
+		boolean isPwdMatched = 
+				passwordEncoder.matches(dto.getPassword(), 
+						userEntity.getPassword());
+		
+		if(isPwdMatched == false) {
+			throw new CustomRestfulException("비밀번호가 잘못 되었습니다", 
+					HttpStatus.BAD_REQUEST);
+		}
+		
 		return userEntity;
 	} 
 	
