@@ -31,12 +31,14 @@ public class UserService {
 	@Transactional 
 	public void createUser(SignUpFormDto dto) {
 		
-		// 추가 개념 암호화 처리
+		// 암호화 처리
 		
 		User user = User.builder()
 				.username(dto.getUsername())
 				.password(passwordEncoder.encode(dto.getPassword()))
 				.fullname(dto.getFullname())
+				.originFileName(dto.getOriginFileName())
+				.uploadFileName(dto.getUploadFileName())
 				.build();
 		
 		int result = userRepository.insert(user);
@@ -73,6 +75,9 @@ public class UserService {
 		return userEntity;
 	} 
 	
-	
+	// 사용자 이름만 가지고 정보 조회
+	public User readUserByUserName(String username) {
+		return userRepository.findByUsername(username);
+	}
 	
 }

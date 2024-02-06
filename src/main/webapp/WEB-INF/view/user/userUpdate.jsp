@@ -3,13 +3,12 @@
 <%@ include file="/WEB-INF/view/layout/header.jsp"%>
 
 <div class="col-sm-8">
-	<h2>회원 가입</h2>
-	<h5>어서오세요 환영합니다</h5> <!-- multipart/form-data 반드시 선언 해야 함 --> 
+	<h2>회원 정보 변경</h2>
 	<form action="/user/sign-up" method="post" enctype="multipart/form-data">
 		<div class="form-group">
 			<label for="username">username:</label> <input type="text"
 				name="username" class="form-control" placeholder="Enter username"
-				id="username">
+				value=${principal.username} id="username">
 		</div>
 		<div class="form-group">
 			<label for="pwd">password:</label> <input type="password"
@@ -26,7 +25,7 @@
 			<label class="custom-file-label" for="customFile">Choose file</label>
 		</div>
 		<br>
-		<button type="submit" class="btn btn-primary">회원가입</button>
+		<button type="submit" class="btn btn-primary">정보변경</button>
 	</form>
 </div>
 </br>
